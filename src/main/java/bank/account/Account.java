@@ -24,7 +24,6 @@ public class Account {
 
     @CommandHandler
     public Account(CreateAccountCommand command) {
-        log.info("Could create account!");
         apply(new AccountCreatedEvent(command.getAccountId(), command.getOverdrawLimit()));
     }
 
@@ -38,7 +37,6 @@ public class Account {
     public void on(GetMoneyCommand command) throws AvailableMoneyExceededException {
         if (this.balance + this.overdraftLimit >= command.getAmount()) {
             apply(new MoneyTakenFromAccountEvent(command.getAccountId(), command.getAmount(), this.balance - command.getAmount()));
-            log.info(String.format("Withdrawing the money, amount: %d", command.getAmount()));
         }
         else {
             throw new AvailableMoneyExceededException();
