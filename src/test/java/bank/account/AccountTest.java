@@ -39,4 +39,22 @@ public class AccountTest {
                 .expectNoEvents()
                 .expectException(AvailableMoneyExceededException.class);
     }
+
+
+    @Test
+    public void testWithdrawMoneyTwiceProperly() {
+        fixture.given(new AccountCreatedEvent("1", 5000),
+                new MoneyTakenFromAccountEvent("1", 2000, -2000))
+                .when(new GetMoneyCommand("1", 3000))
+                .expectEvents(new MoneyTakenFromAccountEvent("1", 3000, -5000));
+    }
+
+    @Test
+    public void testWithdrawMoneyTwiceFailure() {
+        fixture.given(new AccountCreatedEvent("1", 5000),
+                      new MoneyTakenFromAccountEvent("1", 4000, -4000))
+                .when(new GetMoneyCommand("1", 1001))
+                .expectNoEvents()
+                .expectException(AvailableMoneyExceededException.class);
+    }
 }
