@@ -1,5 +1,6 @@
 package bank.account;
 
+import bank.account.exceptions.AvailableMoneyExceededException;
 import bank.core.commands.CreateAccountCommand;
 import bank.core.commands.GetMoneyCommand;
 import bank.core.events.AccountCreatedEvent;
@@ -29,5 +30,13 @@ public class AccountTest {
         fixture.given(new AccountCreatedEvent("1", 5000))
                 .when(new GetMoneyCommand("1", 2000))
                 .expectEvents(new MoneyTakenFromAccountEvent("1", 2000, -2000));
+    }
+
+    @Test
+    public void testWithdrawRidiculousAmountOfMoney() {
+        fixture.given(new AccountCreatedEvent("1", 2000))
+                .when(new GetMoneyCommand("1", 5000))
+                .expectNoEvents()
+                .expectException(AvailableMoneyExceededException.class);
     }
 }
